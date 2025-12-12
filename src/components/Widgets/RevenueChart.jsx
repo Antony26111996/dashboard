@@ -1,4 +1,5 @@
-import { Card, CardContent, Typography, Box, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Card, CardContent, Typography, Box, ToggleButtonGroup, ToggleButton, IconButton, Tooltip as MuiTooltip } from '@mui/material';
+import { PictureAsPdf } from '@mui/icons-material';
 import {
   AreaChart,
   Area,
@@ -10,8 +11,9 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useData } from '../../context/DataContext';
+import { exportChartToPDF } from '../../utils/exportUtils';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -41,11 +43,23 @@ const RevenueChart = () => {
   const { revenueData, weeklyData } = useData();
   const [chartType, setChartType] = useState('area');
   const [timeRange, setTimeRange] = useState('yearly');
+  const chartRef = useRef(null);
 
   const data = timeRange === 'weekly' ? weeklyData : revenueData;
 
+  const handleExportPDF = async () => {
+    if (chartRef.current) {
+      await exportChartToPDF(
+        chartRef.current,
+        `revenue_chart_${new Date().toISOString().split('T')[0]}.pdf`,
+        'Revenue Overview Chart'
+      );
+    }
+  };
+
   return (
     <Card
+      ref={chartRef}
       sx={{
         height: '100%',
         background: 'linear-gradient(145deg, #1a1a2e 0%, #16162a 100%)',
@@ -65,7 +79,19 @@ const RevenueChart = () => {
               {timeRange === 'weekly' ? 'Last 7 days' : 'Monthly revenue for 2024'}
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+            <MuiTooltip title="Export as PDF">
+              <IconButton
+                size="small"
+                onClick={handleExportPDF}
+                sx={{
+                  color: 'rgba(255,255,255,0.5)',
+                  '&:hover': { color: '#ff5252', background: 'rgba(255, 82, 82, 0.1)' },
+                }}
+              >
+                <PictureAsPdf sx={{ fontSize: 18 }} />
+              </IconButton>
+            </MuiTooltip>
             <ToggleButtonGroup
               value={timeRange}
               exclusive

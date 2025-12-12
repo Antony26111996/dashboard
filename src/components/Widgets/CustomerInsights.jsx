@@ -1,14 +1,28 @@
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography, Box, IconButton, Tooltip } from '@mui/material';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp } from '@mui/icons-material';
+import { TrendingUp, PictureAsPdf } from '@mui/icons-material';
+import { useRef } from 'react';
 import { useData } from '../../context/DataContext';
+import { exportChartToPDF } from '../../utils/exportUtils';
 
 const CustomerInsights = () => {
   const { customerInsightsData } = useData();
   const { segments = [], metrics = [] } = customerInsightsData || {};
+  const chartRef = useRef(null);
+
+  const handleExportPDF = async () => {
+    if (chartRef.current) {
+      await exportChartToPDF(
+        chartRef.current,
+        `customer_insights_${new Date().toISOString().split('T')[0]}.pdf`,
+        'Customer Insights Chart'
+      );
+    }
+  };
 
   return (
     <Card
+      ref={chartRef}
       sx={{
         height: '100%',
         background: 'linear-gradient(145deg, #1a1a2e 0%, #16162a 100%)',
@@ -19,13 +33,27 @@ const CustomerInsights = () => {
       }}
     >
       <CardContent sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column', '&:last-child': { pb: 2 } }}>
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
-            Customer Insights
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-            Segment breakdown
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
+              Customer Insights
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>
+              Segment breakdown
+            </Typography>
+          </Box>
+          <Tooltip title="Export as PDF">
+            <IconButton
+              size="small"
+              onClick={handleExportPDF}
+              sx={{
+                color: 'rgba(255,255,255,0.5)',
+                '&:hover': { color: '#ff5252', background: 'rgba(255, 82, 82, 0.1)' },
+              }}
+            >
+              <PictureAsPdf sx={{ fontSize: 18 }} />
+            </IconButton>
+          </Tooltip>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 2, flex: 1, flexDirection: { xs: 'column', sm: 'row' } }}>

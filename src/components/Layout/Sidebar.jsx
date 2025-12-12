@@ -265,8 +265,8 @@ const Sidebar = ({ collapsed, onToggle, mobileOpen, onMobileClose }) => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)',
-            borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+            background: colors.background,
+            borderRight: `1px solid ${colors.border}`,
           },
         }}
       >
@@ -288,8 +288,8 @@ const Sidebar = ({ collapsed, onToggle, mobileOpen, onMobileClose }) => {
           boxSizing: 'border-box',
           transition: 'width 0.3s ease',
           overflowX: 'hidden',
-          background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)',
-          borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+          background: colors.background,
+          borderRight: `1px solid ${colors.border}`,
           position: 'fixed',
           top: 0,
           left: 0,

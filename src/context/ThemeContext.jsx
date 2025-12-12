@@ -179,7 +179,11 @@ const getDesignTokens = (mode) => ({
 export const ThemeContextProvider = ({ children }) => {
   const [mode, setMode] = useState(() => {
     const saved = localStorage.getItem('themeMode');
-    return saved || 'dark';
+    // Default to dark mode, only use saved if it's a valid value
+    if (saved === 'light' || saved === 'dark') {
+      return saved;
+    }
+    return 'dark';
   });
 
   useEffect(() => {

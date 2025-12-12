@@ -1,3 +1,6 @@
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+
 /**
  * Utility functions for exporting data
  */
@@ -174,4 +177,131 @@ export const exportAllDataToJSON = (data) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+/**
+ * Export a chart/element to PDF
+ * @param {HTMLElement} element - The DOM element to capture
+ * @param {string} filename - Name of the PDF file
+ * @param {string} title - Title to display on the PDF
+ */
+export const exportChartToPDF = async (element, filename, title = 'Chart Export') => {
+  if (!element) {
+    console.error('No element provided for PDF export');
+    return;
+  }
+
+  try {
+    // Create canvas from the element
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#1a1a2e',
+      logging: false,
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+
+    // Calculate PDF dimensions (A4 landscape for charts)
+    const pdf = new jsPDF({
+      orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [imgWidth + 40, imgHeight + 80],
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    // Add title
+    pdf.setFontSize(16);
+    pdf.setTextColor(0, 212, 255);
+    pdf.text(title, 20, 30);
+
+    // Add timestamp
+    pdf.setFontSize(10);
+    pdf.setTextColor(128, 128, 128);
+    const timestamp = new Date().toLocaleString();
+    pdf.text(`Generated: ${timestamp}`, 20, 50);
+
+    // Add the chart image
+    pdf.addImage(imgData, 'PNG', 20, 60, imgWidth, imgHeight);
+
+    // Save the PDF
+    const finalFilename = filename || `chart_export_${new Date().toISOString().split('T')[0]}.pdf`;
+    pdf.save(finalFilename);
+
+    return true;
+  } catch (error) {
+    console.error('Error exporting to PDF:', error);
+    return false;
+  }
+};
+
+/**
+ * Export multiple charts/widgets to a single PDF
+ * @param {Array} elements - Array of {element, title} objects
+ * @param {string} filename - Name of the PDF file
+ */
+export const exportMultipleChartsToPDF = async (elements, filename = 'dashboard_charts.pdf') => {
+  if (!elements || elements.length === 0) {
+    console.error('No elements provided for PDF export');
+    return;
+  }
+
+  try {
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+
+    for (let i = 0; i < elements.length; i++) {
+      const { element, title } = elements[i];
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+
+      // Add title
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 212, 255);
+      pdf.text(title || `Chart ${i + 1}`, margin, margin + 5);
+
+      // Capture element
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#1a1a2e',
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Add image (fit to page)
+      const finalHeight = Math.min(imgHeight, pageHeight - margin * 2 - 15);
+      pdf.addImage(imgData, 'PNG', margin, margin + 10, imgWidth, finalHeight);
+    }
+
+    // Add footer with timestamp
+    const timestamp = new Date().toLocaleString();
+    pdf.setFontSize(8);
+    pdf.setTextColor(128, 128, 128);
+    pdf.text(`Generated: ${timestamp}`, margin, pageHeight - 5);
+
+    pdf.save(filename);
+    return true;
+  } catch (error) {
+    console.error('Error exporting to PDF:', error);
+    return false;
+  }
 };

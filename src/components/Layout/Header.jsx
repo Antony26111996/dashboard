@@ -90,6 +90,13 @@ const Header = ({ title, collapsed, onMobileMenuClick }) => {
         width: { xs: '100%', md: `calc(100% - ${sidebarWidth}px)` },
         ml: { xs: 0, md: `${sidebarWidth}px` },
         transition: 'width 0.3s ease, margin-left 0.3s ease',
+        background: isDark
+          ? 'linear-gradient(145deg, rgba(18, 18, 26, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%)'
+          : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 0.98) 100%)',
+        borderBottom: isDark
+          ? '1px solid rgba(255, 255, 255, 0.05)'
+          : '1px solid rgba(0, 0, 0, 0.08)',
+        color: isDark ? '#fff' : '#1a1a2e',
       }}
     >
       <Toolbar className="header-toolbar">
@@ -117,14 +124,25 @@ const Header = ({ title, collapsed, onMobileMenuClick }) => {
                 // Trigger command palette via keyboard event
                 window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
               }}
-              sx={{ cursor: 'pointer' }}
+              sx={{
+                cursor: 'pointer',
+                background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+              }}
             >
-              <Search className="search-icon" />
+              <Search className="search-icon" sx={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }} />
               <InputBase
                 placeholder="Search..."
                 className="search-input"
                 readOnly
-                sx={{ cursor: 'pointer' }}
+                sx={{
+                  cursor: 'pointer',
+                  color: isDark ? '#fff' : '#1a1a2e',
+                  '& input::placeholder': {
+                    color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)',
+                    opacity: 1,
+                  },
+                }}
               />
               <Box
                 sx={{
@@ -202,8 +220,10 @@ const Header = ({ title, collapsed, onMobileMenuClick }) => {
             PaperProps={{
               sx: {
                 mt: 1,
-                background: 'linear-gradient(145deg, #1a1a2e 0%, #12121a 100%)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: isDark
+                  ? 'linear-gradient(145deg, #1a1a2e 0%, #12121a 100%)'
+                  : 'linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%)',
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
                 borderRadius: 2,
                 minWidth: 180,
               },
@@ -217,7 +237,7 @@ const Header = ({ title, collapsed, onMobileMenuClick }) => {
               <Settings sx={{ mr: 1.5, fontSize: 20 }} />
               Settings
             </MenuItem>
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+            <Divider sx={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }} />
             <MenuItem onClick={handleLogout} sx={{ color: '#ff5252' }}>
               <Logout sx={{ mr: 1.5, fontSize: 20 }} />
               Logout
@@ -233,15 +253,17 @@ const Header = ({ title, collapsed, onMobileMenuClick }) => {
             PaperProps={{
               sx: {
                 mt: 1,
-                background: 'linear-gradient(145deg, #1a1a2e 0%, #12121a 100%)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: isDark
+                  ? 'linear-gradient(145deg, #1a1a2e 0%, #12121a 100%)'
+                  : 'linear-gradient(145deg, #ffffff 0%, #f5f7fa 100%)',
+                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
                 borderRadius: 2,
                 minWidth: 280,
                 maxWidth: 320,
               },
             }}
           >
-            <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            <Box sx={{ p: 2, borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)' }}>
               <Typography variant="subtitle1" fontWeight={600}>
                 Notifications
               </Typography>
@@ -256,7 +278,7 @@ const Header = ({ title, collapsed, onMobileMenuClick }) => {
                 </Box>
               </MenuItem>
             ))}
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
+            <Divider sx={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }} />
             <MenuItem
               onClick={handleNotificationClose}
               sx={{ justifyContent: 'center', color: '#00d4ff' }}

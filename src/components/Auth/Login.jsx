@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useThemeContext } from '../../context/ThemeContext';
 import {
   Box,
   Card,
@@ -19,6 +20,8 @@ import {
   Email,
   Lock,
   Dashboard,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
 import './Login.css';
 
@@ -31,6 +34,7 @@ const Login = () => {
   const [touched, setTouched] = useState({ email: false, password: false });
 
   const { login, isAuthenticated } = useAuth();
+  const { toggleTheme, isDark } = useThemeContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -79,23 +83,74 @@ const Login = () => {
   };
 
   return (
-    <Box className="login-container">
+    <Box
+      className="login-container"
+      sx={{
+        background: isDark
+          ? 'linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #1a1a2e 100%)'
+          : 'linear-gradient(135deg, #e8f4f8 0%, #f0f4f8 50%, #f5f7fa 100%)',
+      }}
+    >
+      {/* Theme Toggle Button */}
+      <IconButton
+        onClick={toggleTheme}
+        sx={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          zIndex: 10,
+          color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)',
+          background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+          '&:hover': {
+            background: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+            transform: 'rotate(180deg)',
+          },
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {isDark ? <LightMode /> : <DarkMode />}
+      </IconButton>
+
       <div className="login-background">
         <div className="gradient-orb orb-1"></div>
         <div className="gradient-orb orb-2"></div>
         <div className="gradient-orb orb-3"></div>
       </div>
 
-      <Card className="login-card">
+      <Card
+        className="login-card"
+        sx={{
+          background: isDark
+            ? 'linear-gradient(145deg, rgba(26, 26, 46, 0.9) 0%, rgba(18, 18, 26, 0.95) 100%) !important'
+            : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.98) 100%) !important',
+          border: isDark
+            ? '1px solid rgba(255, 255, 255, 0.1) !important'
+            : '1px solid rgba(0, 0, 0, 0.1) !important',
+          boxShadow: isDark
+            ? '0 20px 60px rgba(0, 0, 0, 0.5) !important'
+            : '0 20px 60px rgba(0, 0, 0, 0.15) !important',
+        }}
+      >
         <CardContent sx={{ p: 4 }}>
           <Box className="login-header">
             <Box className="logo-container">
               <Dashboard sx={{ fontSize: 40, color: '#00d4ff' }} />
             </Box>
-            <Typography variant="h4" className="login-title">
+            <Typography
+              variant="h4"
+              className="login-title"
+              sx={{
+                background: isDark
+                  ? 'linear-gradient(135deg, #ffffff 0%, #00d4ff 100%)'
+                  : 'linear-gradient(135deg, #1a1a2e 0%, #00a3cc 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
               Welcome Back
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
               Sign in to access your dashboard
             </Typography>
           </Box>
@@ -181,7 +236,7 @@ const Login = () => {
           </form>
 
           <Box sx={{ mt: 3, textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>
               Demo: Use any email and password (min 6 chars)
             </Typography>
           </Box>
